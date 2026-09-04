@@ -1,0 +1,68 @@
+[gd_scene load_steps=3 format=3 uid="uid://b28moec01xm18"]
+
+[ext_resource type="Script" uid="uid://dfat4wsr2d5bo" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
+content_margin_left = 60.0
+draw_center = false
+
+[node name="MainMenu" type="Node3D"]
+script = ExtResource("1_l6cm7")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 959.0
+grow_vertical = 2
+theme_override_constants/margin_left = 130
+theme_override_constants/margin_top = 160
+theme_override_constants/margin_bottom = 60
+metadata/_edit_group_ = true
+
+[node name="MenuContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+metadata/_edit_group_ = true
+
+[node name="LabelContainer" type="MarginContainer" parent="MarginContainer/MenuContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_bottom = 80
+
+[node name="Label" type="Label" parent="MarginContainer/MenuContainer/LabelContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 80
+text = "BLACKSTONE PROTOCOL"
+
+[node name="Selector" type="Label" parent="MarginContainer/MenuContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = ">"
+
+[node name="ButtonContainer" type="VBoxContainer" parent="MarginContainer/MenuContainer"]
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+theme_override_styles/focus = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ekxnf")
+text = "NUEVA PARTIDA"
+alignment = 0
+
+[node name="ExitButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 35
+theme_override_styles/focus = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ekxnf")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ekxnf")
+text = "SALIR"
+alignment = 0
+
+[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
