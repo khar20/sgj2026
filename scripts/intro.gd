@@ -43,7 +43,7 @@ func change_entry(new_index: int) -> void:
 	is_transitioning = true
 	current_index = new_index
 
-	# Kill any ongoing tween to avoid overlapping state bugs
+	# Kill any running tween before starting a new transition
 	if tween and tween.is_running():
 		tween.kill()
 
@@ -57,7 +57,6 @@ func change_entry(new_index: int) -> void:
 	# Step 3: Fade text back in
 	tween.tween_property(label, "modulate:a", 1.0, fade_time)
 	
-	# Unlock input when animation finishes
 	await tween.finished
 	is_transitioning = false
 	

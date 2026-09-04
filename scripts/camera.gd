@@ -1,7 +1,7 @@
 extends Camera3D
-## updateCamera port: third-person follow rig with recoil shake, ADS gunner
-## view on the optic mount, FOV lerp and ground-clamp. Pure kinematic follows;
-## the player feeds aim_yaw/aim_pitch and current_aim_point each frame.
+## Third-person follow rig with recoil shake and an ADS gunner view on the
+## optic mount, plus FOV lerp. Pure kinematic follows; the player feeds
+## aim_yaw/aim_pitch and current_aim_point each frame.
 
 var player: Node
 var world: Node
@@ -45,8 +45,6 @@ func update_camera(dt: float) -> void:
 
 	if not is_optic_view:
 		var boss_scale: float = 0.0
-		#if in_combat:
-			#boss_scale = float(TERRAIN.BOSS['grid']['y']) * float(TERRAIN.BOSS['cellSize'])
 		target_distance = 16.0 + boss_scale * 0.9 if in_combat else 14.5
 		distance = lerpf(distance, target_distance, dt * 2.5)
 		var target_cam_height: float = 3.4 + boss_scale * 0.16 if in_combat else 3.4
@@ -56,10 +54,6 @@ func update_camera(dt: float) -> void:
 		var aim_dir: Vector3 = (player.current_aim_point - turret_anchor).normalized()
 		var cam_pos: Vector3 = turret_anchor - aim_dir * distance + Vector3(0, height, 0)
 		cam_pos += Vector3(sx * 1.6, sy * 1.6, 0)
-		#if world:
-			#var ground_at_cam: float = TERRAIN.get_effective_ground_height(cam_pos.x, cam_pos.z)
-			#if cam_pos.y < ground_at_cam + 0.85:
-				#cam_pos.y = ground_at_cam + 0.85
 		global_position = global_position.lerp(cam_pos, minf(1.0, dt * 12.0))
 		look_at(player.current_aim_point, Vector3.UP)
 	else:
