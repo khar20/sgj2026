@@ -14,6 +14,8 @@ var selector_tween: Tween
 var active_button: Button = null
 
 func _ready() -> void:
+	get_tree().paused = false
+	is_transitioning = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	
 	for child in button_container.get_children():
@@ -60,8 +62,6 @@ func _animate_press(button: Button) -> Tween:
 	press_tween.tween_property(button, "scale", Vector2(1.1, 1.1), 0.08)
 	press_tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.08)
 	return press_tween
-	
-# --- Button Handlers ---
 
 func _on_new_game_button_pressed() -> void:
 	if is_transitioning:

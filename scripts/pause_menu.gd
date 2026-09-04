@@ -1,37 +1,39 @@
-extends VBoxContainer
+extends Control
 
-const INTRO = preload("res://scenes/intro.tscn")
+const MAIN_MENU_SCENE = preload("res://scenes/main_menu.tscn")
 
 @export var fade_time: float = 0.5
 @export var move_duration: float = 0.15
 
-@onready var selector: Label = $Selector
-@onready var button_container: VBoxContainer = $ButtonContainer
+@onready var selector: Label = $MarginContainer/MenuContainer/Selector
+@onready var menu_container: VBoxContainer = $MarginContainer/MenuContainer
+@onready var button_container: VBoxContainer = $MarginContainer/MenuContainer/ButtonContainer
 
 var is_transitioning: bool = false
 var selector_tween: Tween
 var active_button: Button = null
 
 func _ready() -> void:
-	# Connect focus and hover signals for all buttons dynamically
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
+	visibility_changed.connect(_on_visibility_changed)
+	
 	for child in button_container.get_children():
 		if child is Button:
 			child.mouse_entered.connect(_on_button_hovered.bind(child))
 			child.focus_entered.connect(_on_button_focused.bind(child))
-
-	# Initialize selector state on the first focusable button
+	
 	await get_tree().process_frame
 	var first_button = _get_first_button()
 	if first_button:
 		first_button.grab_focus()
-
+		
 func _get_first_button() -> Button:
 	for child in button_container.get_children():
 		if child is Button and not child.disabled:
 			return child
 	return null
-
-# --- Selection & Animation Logic ---
 
 func _on_button_hovered(button: Button) -> void:
 	if is_transitioning:
@@ -61,23 +63,40 @@ func _animate_press(button: Button) -> Tween:
 	press_tween.tween_property(button, "scale", Vector2(1.1, 1.1), 0.08)
 	press_tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.08)
 	return press_tween
-
-# --- Button Handlers ---
-
-func _on_new_game_button_pressed() -> void:
+	
+func _on_visibility_changed() -> void:
+	if visible:
+		modulate.a = 1.0
+		menu_container.modulate.a = 1.0
+		is_transitioning = false
+		
+		# Refocus the first button automatically
+		var first_button = _get_first_button()
+		if first_button:
+			first_button.grab_focus()
+	
+func _on_resume_button_pressed() -> void:
+	if is_transitioning:
+		return
+		
+	PauseManager.toggle_pause()
+	
+func _on_main_menu_button_pressed() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
 
-	var btn = button_container.get_node("NewGameButton") as Button
-	await _animate_press(btn).finished
+	var btn = button_container.get_node_or_null("MainMenuButton") as Button
+	if btn:
+		await _animate_press(btn).finished
 
-	var tween = create_tween()
+	var tween = create_tween().set_parallel(false)
 	tween.tween_property(self, "modulate:a", 0.0, fade_time)
-	
 	await tween.finished
-	get_tree().change_scene_to_packed(INTRO)
 
+	PauseManager.toggle_pause()
+	get_tree().change_scene_to_packed(MAIN_MENU_SCENE)
+	
 func _on_exit_button_pressed() -> void:
 	if is_transitioning:
 		return
@@ -87,6 +106,6 @@ func _on_exit_button_pressed() -> void:
 	await _animate_press(btn).finished
 
 	var tween = create_tween()
-	tween.tween_property(self, "modulate:a", 0.0, fade_time)
+	tween.tween_property(menu_container, "modulate:a", 0.0, fade_time)
 	await tween.finished
 	get_tree().quit()

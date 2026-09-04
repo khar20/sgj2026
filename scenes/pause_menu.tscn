@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://de4bhp31mvjwg"]
 
-[ext_resource type="Script" uid="uid://d37fqyammhhk1" path="res://scripts/menu_container.gd" id="1_n87rw"]
+[ext_resource type="Script" uid="uid://cgjycslt1wha4" path="res://scripts/pause_menu.gd" id="1_n87rw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_myx47"]
-content_margin_left = 60.0
+content_margin_left = 40.0
 draw_center = false
 
 [node name="PauseMenu" type="Control"]
@@ -13,6 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_n87rw")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -36,7 +37,6 @@ metadata/_edit_group_ = true
 
 [node name="MenuContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-script = ExtResource("1_n87rw")
 metadata/_edit_group_ = true
 
 [node name="LabelContainer" type="MarginContainer" parent="MarginContainer/MenuContainer"]
@@ -91,6 +91,6 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_myx47")
 text = "SALIR"
 alignment = 0
 
-[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ResumeButton" to="MarginContainer/MenuContainer" method="_on_new_game_button_pressed"]
-[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/MainMenuButton" to="MarginContainer/MenuContainer" method="_on_exit_button_pressed"]
-[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ExitButton" to="MarginContainer/MenuContainer" method="_on_exit_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
+[connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]
