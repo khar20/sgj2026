@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://dtyukydf1uoe2"]
+[gd_scene load_steps=5 format=3 uid="uid://dtyukydf1uoe2"]
 
 [ext_resource type="Script" uid="uid://bpwsvamxan0pe" path="res://scripts/intro.gd" id="1_ioskq"]
 [ext_resource type="PackedScene" uid="uid://bdh2ope70r8h" path="res://scenes/world.tscn" id="2_yjqpq"]
+[ext_resource type="FontFile" uid="uid://b06c4c0h3u17k" path="res://assets/fonts/Figtree/static/Figtree-Regular.ttf" id="3_4bx60"]
+[ext_resource type="Texture2D" uid="uid://dgumgkdm8a2la" path="res://assets/game_logo_intro.svg" id="3_i2l1n"]
 
 [node name="Intro" type="Control"]
 layout_mode = 3
@@ -38,6 +40,7 @@ grow_vertical = 2
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer"]
 layout_mode = 2
+texture = ExtResource("3_i2l1n")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 1
@@ -52,3 +55,4 @@ offset_right = 20.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_4bx60")

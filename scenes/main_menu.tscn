@@ -1,10 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://b28moec01xm18"]
+[gd_scene load_steps=8 format=3 uid="uid://b28moec01xm18"]
 
 [ext_resource type="Script" uid="uid://dfat4wsr2d5bo" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+[ext_resource type="Material" uid="uid://bfkidlejiwr0p" path="res://shaders/sky_material.tres" id="2_ekxnf"]
+[ext_resource type="FontFile" uid="uid://bmcg20kpsoebi" path="res://assets/fonts/Montserrat/static/Montserrat-Bold.ttf" id="2_wu84c"]
+[ext_resource type="FontFile" uid="uid://dp31pxvvt5obk" path="res://assets/fonts/Roboto_Mono/static/RobotoMono-Bold.ttf" id="3_8ln24"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
 content_margin_left = 40.0
 draw_center = false
+
+[sub_resource type="Sky" id="Sky_bqqt6"]
+sky_material = ExtResource("2_ekxnf")
+
+[sub_resource type="Environment" id="Environment_wu84c"]
+background_mode = 2
+sky = SubResource("Sky_bqqt6")
 
 [node name="MainMenu" type="Node3D"]
 script = ExtResource("1_l6cm7")
@@ -32,6 +42,7 @@ theme_override_constants/margin_bottom = 80
 
 [node name="Label" type="Label" parent="MarginContainer/MenuContainer/LabelContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_wu84c")
 theme_override_font_sizes/font_size = 80
 text = "BLACKSTONE PROTOCOL"
 
@@ -45,6 +56,7 @@ layout_mode = 2
 
 [node name="NewGameButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_8ln24")
 theme_override_font_sizes/font_size = 35
 theme_override_styles/focus = SubResource("StyleBoxFlat_ekxnf")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
@@ -56,6 +68,7 @@ alignment = 0
 [node name="ExitButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
 layout_mode = 2
 theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("3_8ln24")
 theme_override_font_sizes/font_size = 35
 theme_override_styles/focus = SubResource("StyleBoxFlat_ekxnf")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ekxnf")
@@ -63,6 +76,9 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_ekxnf")
 theme_override_styles/normal = SubResource("StyleBoxFlat_ekxnf")
 text = "SALIR"
 alignment = 0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wu84c")
 
 [connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="MarginContainer/MenuContainer/ButtonContainer/ExitButton" to="." method="_on_exit_button_pressed"]

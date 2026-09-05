@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://de4bhp31mvjwg"]
+[gd_scene load_steps=5 format=3 uid="uid://de4bhp31mvjwg"]
 
 [ext_resource type="Script" uid="uid://cgjycslt1wha4" path="res://scripts/pause_menu.gd" id="1_n87rw"]
+[ext_resource type="FontFile" uid="uid://bmcg20kpsoebi" path="res://assets/fonts/Montserrat/static/Montserrat-Bold.ttf" id="2_kukqi"]
+[ext_resource type="FontFile" uid="uid://dp31pxvvt5obk" path="res://assets/fonts/Roboto_Mono/static/RobotoMono-Bold.ttf" id="3_5d2l8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_myx47"]
 content_margin_left = 40.0
@@ -46,6 +48,7 @@ theme_override_constants/margin_bottom = 80
 
 [node name="Label" type="Label" parent="MarginContainer/MenuContainer/LabelContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_kukqi")
 theme_override_font_sizes/font_size = 80
 text = "BLACKSTONE PROTOCOL"
 
@@ -59,6 +62,7 @@ layout_mode = 2
 
 [node name="ResumeButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_5d2l8")
 theme_override_font_sizes/font_size = 35
 theme_override_styles/focus = SubResource("StyleBoxFlat_myx47")
 theme_override_styles/hover = SubResource("StyleBoxFlat_myx47")
@@ -71,6 +75,7 @@ alignment = 0
 [node name="MainMenuButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
 layout_mode = 2
 theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("3_5d2l8")
 theme_override_font_sizes/font_size = 35
 theme_override_styles/focus = SubResource("StyleBoxFlat_myx47")
 theme_override_styles/hover = SubResource("StyleBoxFlat_myx47")
@@ -83,6 +88,7 @@ alignment = 0
 [node name="ExitButton" type="Button" parent="MarginContainer/MenuContainer/ButtonContainer"]
 layout_mode = 2
 theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("3_5d2l8")
 theme_override_font_sizes/font_size = 35
 theme_override_styles/focus = SubResource("StyleBoxFlat_myx47")
 theme_override_styles/hover = SubResource("StyleBoxFlat_myx47")
