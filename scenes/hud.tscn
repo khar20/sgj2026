@@ -96,7 +96,7 @@ theme_override_constants/separation = 12
 
 [node name="HullTitle" type="Label" parent="Root/HealthPanel/Margin/HBox"]
 layout_mode = 2
-text = "HULL"
+text = "CASCO"
 theme_override_colors/font_color = Color(1, 0.78, 0.4, 1)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
@@ -153,6 +153,6 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_override_font_sizes/font_size = 64
-text = "UNIT DESTROYED"
+text = "UNIDAD DESTRUÍDA"
 horizontal_alignment = 1
 vertical_alignment = 1

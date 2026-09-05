@@ -73,51 +73,71 @@ func _build_shell() -> void:
 	var shell := MeshInstance3D.new()
 	shell.name = "Shell"
 	var mesh := CylinderMesh.new()
-	mesh.top_radius = 0.1
-	mesh.bottom_radius = 0.12
-	mesh.height = 1.4
+	mesh.top_radius = 0.18
+	mesh.bottom_radius = 0.22
+	mesh.height = 2.0
 	shell.mesh = mesh
 	shell.rotation_degrees = Vector3(-90, 0, 0)
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 0.82, 0.65)
+	mat.albedo_color = Color(1.0, 0.88, 0.7)
 	mat.emission_enabled = true
-	mat.emission = Color(1.0, 0.55, 0.25)
-	mat.emission_energy_multiplier = 3.0
+	mat.emission = Color(1.0, 0.55, 0.2)
+	mat.emission_energy_multiplier = 6.0
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.disable_receive_shadows = true
 	shell.material_override = mat
 	shell.position = Vector3(0, 0, 0.0)
 	add_child(shell)
 
+	var glint := MeshInstance3D.new()
+	glint.name = "Glint"
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.7, 0.7)
+	glint.mesh = quad
+	var gmat := StandardMaterial3D.new()
+	gmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	gmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	gmat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	gmat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	gmat.albedo_color = Color(1.0, 0.7, 0.35, 0.9)
+	gmat.disable_receive_shadows = true
+	glint.material_override = gmat
+	glint.position = Vector3(0, 0, 0)
+	add_child(glint)
+
 	var glow := OmniLight3D.new()
 	glow.name = "Glow"
-	glow.light_color = Color(1.0, 0.55, 0.25)
-	glow.omni_range = 5.0
-	glow.light_energy = 3.0
+	glow.light_color = Color(1.0, 0.55, 0.2)
+	glow.omni_range = 9.0
+	glow.light_energy = 4.0
 	add_child(glow)
 
 	var trail := GPUParticles3D.new()
 	trail.name = "Trail"
-	trail.amount = 32
-	trail.lifetime = 0.3
+	trail.amount = 56
+	trail.lifetime = 0.45
 	trail.explosiveness = 0.85
 	trail.local_coords = false
 	trail.emitting = true
 	var pm := ParticleProcessMaterial.new()
 	pm.direction = Vector3.BACK
-	pm.spread = 18.0
+	pm.spread = 22.0
 	pm.initial_velocity_min = 0.5
-	pm.initial_velocity_max = 2.0
+	pm.initial_velocity_max = 3.0
 	pm.gravity = Vector3.ZERO
-	pm.scale_min = 0.35
-	pm.scale_max = 0.9
+	pm.scale_min = 0.5
+	pm.scale_max = 1.4
 	var ramp := Gradient.new()
-	ramp.set_color(0, Color(1.0, 0.7, 0.35, 0.85))
-	ramp.set_color(1, Color(0.4, 0.2, 0.1, 0.0))
-	pm.color_ramp = ramp
+	ramp.set_color(0, Color(1.0, 0.75, 0.4, 0.95))
+	ramp.set_color(1, Color(0.45, 0.22, 0.1, 0.0))
+	var ramp_tex := GradientTexture1D.new()
+	ramp_tex.gradient = ramp
+	
+	pm.color_ramp = ramp_tex
 	trail.process_material = pm
 	var puff := SphereMesh.new()
-	puff.radius = 0.07
-	puff.height = 0.14
+	puff.radius = 0.09
+	puff.height = 0.18
 	trail.draw_pass_1 = puff
 	add_child(trail)
 
@@ -144,52 +164,56 @@ static func spawn_impact(p_host: Node, p_pos: Vector3, p_nrm: Vector3) -> void:
 	var flash := MeshInstance3D.new()
 	flash.name = "Flash"
 	var quad := QuadMesh.new()
-	quad.size = Vector2(1.3, 1.3)
+	quad.size = Vector2(1.8, 1.8)
 	flash.mesh = quad
 	var fmat := StandardMaterial3D.new()
 	fmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	fmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	fmat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	fmat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 	fmat.albedo_color = Color(1.0, 0.72, 0.35, 0.95)
 	flash.material_override = fmat
 	root.add_child(flash)
 
 	var sparks := GPUParticles3D.new()
 	sparks.name = "Sparks"
-	sparks.amount = 28
-	sparks.lifetime = 0.5
+	sparks.amount = 44
+	sparks.lifetime = 0.6
 	sparks.local_coords = false
 	sparks.one_shot = true
 	sparks.emitting = true
 	var smat := ParticleProcessMaterial.new()
 	smat.direction = Vector3.UP
 	smat.spread = 180.0
-	smat.initial_velocity_min = 2.0
-	smat.initial_velocity_max = 8.0
+	smat.initial_velocity_min = 3.0
+	smat.initial_velocity_max = 11.0
 	smat.gravity = Vector3(0.0, -24.0, 0.0)
 	smat.scale_min = 0.12
-	smat.scale_max = 0.45
+	smat.scale_max = 0.5
 	var sramp := Gradient.new()
 	sramp.set_color(0, Color(1.0, 0.9, 0.5, 1.0))
 	sramp.set_color(1, Color(0.7, 0.25, 0.1, 0.0))
-	smat.color_ramp = sramp
+	var sramp_tex := GradientTexture1D.new()
+	sramp_tex.gradient = sramp
+	
+	smat.color_ramp = sramp_tex
 	sparks.process_material = smat
 	var spark_mesh := SphereMesh.new()
-	spark_mesh.radius = 0.06
-	spark_mesh.height = 0.12
+	spark_mesh.radius = 0.07
+	spark_mesh.height = 0.14
 	sparks.draw_pass_1 = spark_mesh
 	root.add_child(sparks)
 
 	var light := OmniLight3D.new()
 	light.name = "FlashLight"
 	light.light_color = Color(1.0, 0.6, 0.3)
-	light.omni_range = 9.0
-	light.light_energy = 6.0
+	light.omni_range = 12.0
+	light.light_energy = 9.0
 	root.add_child(light)
 
 	var tween := root.create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(flash, "scale", Vector3.ONE * 2.4, 0.18)
+	tween.tween_property(flash, "scale", Vector3.ONE * 3.2, 0.18)
 	tween.tween_property(fmat, "albedo_color:a", 0.0, 0.18)
 	tween.tween_property(light, "light_energy", 0.0, 0.3)
 	tween.chain().tween_callback(root.queue_free)

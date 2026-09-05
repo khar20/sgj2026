@@ -3,9 +3,9 @@ extends Control
 const GEN := preload("res://scripts/world_gen.gd")
 
 @export_multiline var lore_entries: Array[String] = [
-	"Entry 1: Long ago, in a kingdom far away...",
-	"Entry 2: Darkness fell upon the lands.",
-	"Entry 3: One hero rose to face the shadow."
+	"Entrada 1: Hace mucho tiempo, en un reino lejano...",
+	"Entrada 2: La oscuridad cayó sobre estas tierras.",
+	"Entrada 3: Una heroína se alzó para enfrentar la sombra."
 ]
 @export var fade_time: float = 0.3
 @export var game_scene: PackedScene
@@ -87,5 +87,5 @@ func start_game() -> void:
 
 func _poll_generation() -> void:
 	while not GEN.ready():
-		loading_label.text = "GENERATING TERRAIN... %d%%" % int(GEN.progress() * 100.0)
+		loading_label.text = "GENERANDO TERRENO... %d%%" % int(GEN.progress() * 100.0)
 		await get_tree().process_frame

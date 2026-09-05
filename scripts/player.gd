@@ -25,14 +25,20 @@ const FX := preload("res://scripts/projectile.gd")
 ##   camera_toggle (V), move_left (A), move_right (D).
 
 # --- movement tuning (Inspector) ---
-@export var engine_force_value := 1000.0
+@export var engine_force_value := 3000.0
 @export var reverse_force_factor := 0.6
-@export var brake_force := 18.0
-@export var handbrake_force := 60.0
-@export var max_steering := 0.45
-@export var steering_lerp_speed := 4.0
-@export var max_speed := 30.0
-@export var low_speed_boost := 5.0
+@export var brake_force := 55.0
+@export var handbrake_force := 110.0
+@export var max_steering := 0.7
+@export var steering_lerp_speed := 9.0
+@export var max_speed := 50.0
+@export var low_speed_boost := 3.5
+
+# --- mass / weight (heavier, more planted feel) ---
+@export var vehicle_mass := 1000.0
+@export var center_of_mass_offset := Vector3(0.0, -0.3, 0.1)
+@export var native_angular_damp := 2.5
+@export var native_linear_damp := 0.1
 
 # --- input action names (Inspector) ---
 @export var action_accelerate := "accelerate"
@@ -118,6 +124,10 @@ func _ready() -> void:
 	if camera:
 		camera.player = self
 		camera.world = world
+	mass = vehicle_mass
+	center_of_mass = center_of_mass_offset
+	angular_damp = native_angular_damp
+	linear_damp = native_linear_damp
 	add_to_group("player")
 
 

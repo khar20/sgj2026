@@ -33,6 +33,7 @@ func _ready() -> void:
 	var terrain := _create_terrain()
 	_add_water()
 	_add_outposts_and_markers(terrain)
+	_show_controls_hint()
 
 
 func _physics_process(delta: float) -> void:
@@ -273,3 +274,40 @@ func _create_mesh_asset(asset_name: String, color: Color, translucent: bool) -> 
 
 func engaged_boss_zone() -> Node:
 	return _boss_arena
+
+
+## Shows a brief on-screen controls reminder at the very start of the level
+## (not the intro screen — the intro carries a static panel). Auto-fades away
+## after a few seconds so it never gets in the way.
+func _show_controls_hint() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "ControlsHint"
+	add_child(layer)
+
+	var holder := MarginContainer.new()
+	holder.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	holder.offset_top = 18.0
+	layer.add_child(holder)
+
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.02, 0.02, 0.03, 0.6)
+	sb.set_corner_radius_all(10)
+	sb.content_margin_left = 18.0
+	sb.content_margin_right = 18.0
+	sb.content_margin_top = 10.0
+	sb.content_margin_bottom = 10.0
+	panel.add_theme_stylebox_override("panel", sb)
+	holder.add_child(panel)
+
+	var label := Label.new()
+	label.text = "W/S Conducir  ·  A/D Girar  ·  RATÓN Apuntar  ·  CLIC IZQ. Disparar  ·  ESPACIO Freno  ·  V Cámara  ·  ESC Pausa"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 24)
+	panel.add_child(label)
+
+	var tween := create_tween()
+	tween.tween_interval(6.0)
+	tween.tween_property(holder, "modulate:a", 0.0, 1.2)
+	tween.tween_callback(layer.queue_free)

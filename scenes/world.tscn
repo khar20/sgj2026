@@ -3,24 +3,21 @@
 [ext_resource type="PackedScene" uid="uid://c7kk1ypxnisto" path="res://scenes/player.tscn" id="1_nnsk1"]
 [ext_resource type="Script" uid="uid://cptrli8wa2qt7" path="res://scripts/world.gd" id="1_rwgxs"]
 [ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="2_hud"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wrld"]
-sky_top_color = Color(0.192157, 0.282353, 0.509804, 1)
-sky_horizon_color = Color(0.505882, 0.615686, 0.709804, 1)
-ground_bottom_color = Color(0.211765, 0.313726, 0.552941, 1)
-ground_horizon_color = Color(0.505882, 0.615686, 0.709804, 1)
-ground_curve = 0.13
+[ext_resource type="Material" uid="uid://bfkidlejiwr0p" path="res://shaders/sky_material.tres" id="2_sky"]
 
 [sub_resource type="Sky" id="Sky_wrld"]
-sky_material = SubResource("ProceduralSkyMaterial_wrld")
+sky_material = ExtResource("2_sky")
 
 [sub_resource type="Environment" id="Environment_wrld"]
 background_mode = 2
 sky = SubResource("Sky_wrld")
 ambient_light_source = 3
-ambient_light_color = Color(0.55, 0.55, 0.55, 1)
-ambient_light_sky_contribution = 0.3
+ambient_light_color = Color(0.32, 0.35, 0.42, 1)
+ambient_light_sky_contribution = 0.2
 tonemap_mode = 3
+tonemap_exposure = 0.72
+adjustment_enabled = true
+adjustment_brightness = 0.62
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_wrld"]
 
@@ -33,6 +30,7 @@ camera_attributes = SubResource("CameraAttributesPractical_wrld")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.00881382, 0.999961, 0, -0.999961, 0.00881382, 0, 5.37637, 0)
+light_energy = 0.85
 shadow_enabled = true
 shadow_blur = 2.0
 directional_shadow_blend_splits = true

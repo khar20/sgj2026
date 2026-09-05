@@ -3,7 +3,17 @@
 [ext_resource type="Script" uid="uid://bpwsvamxan0pe" path="res://scripts/intro.gd" id="1_ioskq"]
 [ext_resource type="PackedScene" uid="uid://bdh2ope70r8h" path="res://scenes/world.tscn" id="2_yjqpq"]
 [ext_resource type="FontFile" uid="uid://b06c4c0h3u17k" path="res://assets/fonts/Figtree/static/Figtree-Regular.ttf" id="3_4bx60"]
-[ext_resource type="Texture2D" uid="uid://dgumgkdm8a2la" path="res://assets/game_logo_intro.svg" id="3_i2l1n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ctl"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 22.0
+content_margin_bottom = 16.0
+bg_color = Color(0.02, 0.02, 0.03, 0.65)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Intro" type="Control"]
 layout_mode = 3
@@ -37,10 +47,6 @@ offset_right = 315.0
 offset_bottom = 315.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="TextureRect" type="TextureRect" parent="MarginContainer"]
-layout_mode = 2
-texture = ExtResource("3_i2l1n")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 1
@@ -77,6 +83,35 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("3_4bx60")
-text = "GENERATING TERRAIN..."
+text = "GENERANDO TERRENO..."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Controls" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -300.0
+offset_right = 424.0
+offset_bottom = -48.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ctl")
+
+[node name="ControlsLabel" type="Label" parent="Controls"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.87, 0.93, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_4bx60")
+theme_override_font_sizes/font_size = 21
+text = "CONTROLES
+W / S: Conducir / Marcha atrás
+A / D: Girar
+Ratón: Apuntar el cañón
+Clic izquierdo: Disparar
+Espacio: Freno de mano
+V: Cambiar cámara
+Esc: Pausa"
