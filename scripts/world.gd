@@ -1,5 +1,6 @@
 extends Node3D
 const GEN := preload("res://scripts/world_gen.gd")
+const BOSS_SCRIPT := preload("res://scripts/boss.gd")
 ## Main world controller.
 ##
 ## Builds the procedural canyon level from heightmap + control maps produced by
@@ -23,7 +24,7 @@ const TEX_PATH_ARENA := "res://assets/textures/arena_big.png"
 const OUTPOST_A := Vector3(120.0, 0.0, 512.0)
 const OUTPOST_B := Vector3(928.0, 0.0, 512.0)
 
-var _boss_arena: Node3D
+var _boss: Node3D = null
 var _player: Node = null
 var _water_mesh: MeshInstance3D = null
 
@@ -33,6 +34,7 @@ func _ready() -> void:
 	var terrain := _create_terrain()
 	_add_water()
 	_add_outposts_and_markers(terrain)
+	_spawn_boss()
 	_show_controls_hint()
 
 
@@ -46,6 +48,8 @@ func _physics_process(delta: float) -> void:
 	if GEN.is_in_hazard(_player.global_position):
 		if _player.has_method("take_damage"):
 			_player.take_damage(HAZARD_DPS * delta)
+	if _boss and is_instance_valid(_boss):
+		_boss.update(delta, _player.global_position)
 
 
 func _create_terrain() -> Terrain3D:
@@ -156,8 +160,30 @@ func _add_water() -> void:
 func _add_outposts_and_markers(p_terrain: Terrain3D) -> void:
 	_add_outpost("OutpostA", OUTPOST_A, p_terrain, Color(0.95, 0.6, 0.15))
 	_add_outpost("OutpostB", OUTPOST_B, p_terrain, Color(0.85, 0.2, 0.2))
-	_boss_arena = _add_marker("BossArena",
-		Vector3(GEN.BOSS_CENTER.x, 0.0, GEN.BOSS_CENTER.y), p_terrain, Color(0.6, 0.2, 0.9))
+
+
+func _spawn_boss() -> void:
+	_boss = BOSS_SCRIPT.new()
+	_boss.name = "CrystalBoss"
+	_boss.add_to_group("boss")
+	_boss.setup(self, Vector3(GEN.BOSS_CENTER.x, 0.0, GEN.BOSS_CENTER.y))
+	add_child(_boss)
+
+
+func damage_player(amount: float) -> void:
+	if _player and is_instance_valid(_player) and not _player.get("destroyed"):
+		if _player.has_method("take_damage"):
+			_player.take_damage(amount)
+
+
+func on_projectile_hit(_pos: Vector3, collider: Node, damage: float) -> void:
+	if collider and collider.is_in_group("boss") and _boss and is_instance_valid(_boss):
+		_boss.take_damage(damage)
+
+
+func on_hitscan_hit(_pos: Vector3, collider: Node, damage: float) -> void:
+	if collider and collider.is_in_group("boss") and _boss and is_instance_valid(_boss):
+		_boss.take_damage(damage)
 
 
 ## Snaps p_pos onto the terrain surface (keeping its x/z), so beacons planted
@@ -199,36 +225,6 @@ func _add_outpost(p_name: String, p_pos: Vector3, p_terrain: Terrain3D, p_color:
 	label.pixel_size = 0.005
 	outpost.add_child(label)
 	add_child(outpost)
-
-
-func _add_marker(p_name: String, p_pos: Vector3, p_terrain: Terrain3D, p_color: Color) -> Node3D:
-	var marker := Node3D.new()
-	marker.name = p_name
-	marker.position = _snap_to_terrain(p_pos, p_terrain) + Vector3(0.0, 0.5, 0.0)
-	var ring := MeshInstance3D.new()
-	var torus := TorusMesh.new()
-	torus.inner_radius = 90.0
-	torus.outer_radius = 96.0
-	torus.rings = 24
-	torus.ring_segments = 64
-	ring.mesh = torus
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = p_color
-	mat.emission_enabled = true
-	mat.emission = p_color
-	mat.emission_energy_multiplier = 2.5
-	ring.material_override = mat
-	ring.rotation_degrees = Vector3(90, 0, 0)
-	marker.add_child(ring)
-	var label := Label3D.new()
-	label.text = p_name
-	label.position = Vector3(0.0, 5.0, 0.0)
-	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	label.fixed_size = true
-	label.pixel_size = 0.005
-	marker.add_child(label)
-	add_child(marker)
-	return marker
 
 
 func _create_texture_asset(asset_name: String, path: String, uv_scale: float, seed: int) -> Terrain3DTextureAsset:
@@ -273,7 +269,9 @@ func _create_mesh_asset(asset_name: String, color: Color, translucent: bool) -> 
 
 
 func engaged_boss_zone() -> Node:
-	return _boss_arena
+	if _boss and is_instance_valid(_boss) and _boss.is_active():
+		return _boss
+	return null
 
 
 ## Shows a brief on-screen controls reminder at the very start of the level

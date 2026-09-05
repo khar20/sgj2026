@@ -25,20 +25,20 @@ const FX := preload("res://scripts/projectile.gd")
 ##   camera_toggle (V), move_left (A), move_right (D).
 
 # --- movement tuning (Inspector) ---
-@export var engine_force_value := 3000.0
+@export var engine_force_value := 4500.0
 @export var reverse_force_factor := 0.6
-@export var brake_force := 55.0
-@export var handbrake_force := 110.0
-@export var max_steering := 0.7
-@export var steering_lerp_speed := 9.0
+@export var brake_force := 80.0
+@export var handbrake_force := 130.0
+@export var max_steering := 0.5
+@export var steering_lerp_speed := 24.0
 @export var max_speed := 50.0
-@export var low_speed_boost := 3.5
+@export var low_speed_boost := 3.0
 
 # --- mass / weight (heavier, more planted feel) ---
-@export var vehicle_mass := 1000.0
+@export var vehicle_mass := 1500.0
 @export var center_of_mass_offset := Vector3(0.0, -0.3, 0.1)
-@export var native_angular_damp := 2.5
-@export var native_linear_damp := 0.1
+@export var native_angular_damp := 3.0
+@export var native_linear_damp := 0.3
 
 # --- input action names (Inspector) ---
 @export var action_accelerate := "accelerate"
@@ -448,10 +448,16 @@ func _hitscan_fire(origin: Vector3, dir: Vector3) -> void:
 	var hit := space.intersect_ray(query)
 	var impact_pos: Vector3 = origin + dir * raycast_distance
 	var impact_nrm := Vector3.UP
+	var collider: Node = null
 	if not hit.is_empty():
 		impact_pos = hit.get("position", impact_pos)
 		impact_nrm = hit.get("normal", impact_nrm)
+		collider = hit.get("collider", null)
 	_spawn_impact(impact_pos, impact_nrm)
+	if collider:
+		var host := get_tree().current_scene
+		if host.has_method("on_hitscan_hit"):
+			host.on_hitscan_hit(impact_pos, collider, 25.0)
 
 
 ## Impact effect for the hitscan fallback: delegates to the shared burst used by

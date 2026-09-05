@@ -156,3 +156,44 @@ theme_override_font_sizes/font_size = 64
 text = "UNIDAD DESTRUÍDA"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="BossPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 24.0
+offset_right = 200.0
+offset_bottom = 74.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="Root/BossPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 6
+
+[node name="VBox" type="VBoxContainer" parent="Root/BossPanel/Margin"]
+layout_mode = 2
+
+[node name="BossTitle" type="Label" parent="Root/BossPanel/Margin/VBox"]
+layout_mode = 2
+text = "CRISTAL"
+theme_override_colors/font_color = Color(0.6, 0.2, 0.9, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_font_sizes/font_size = 16
+
+[node name="BossBar" type="ProgressBar" parent="Root/BossPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 16)
+layout_mode = 2
+max_value = 800.0
+value = 800.0
+show_percentage = false

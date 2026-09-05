@@ -5,7 +5,7 @@ extends Area3D
 ## burst at the hit point instead of the old placeholder sphere. The shell body
 ## and smoke trail are built in code so the scene needs no external assets.
 
-@export var speed := 98.0
+@export var speed := 160.0
 @export var lifetime := 8.0
 @export var damage := 25.0
 
@@ -50,7 +50,8 @@ func _physics_process(delta: float) -> void:
 	if not hit.is_empty():
 		var pos: Vector3 = hit.get("position", to)
 		var nrm: Vector3 = hit.get("normal", Vector3.UP)
-		_detonate(pos, nrm)
+		var collider: Node = hit.get("collider", null)
+		_detonate(pos, nrm, collider)
 		return
 	global_position = to
 	_life -= delta
@@ -58,10 +59,12 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-func _detonate(p_pos: Vector3, p_nrm: Vector3) -> void:
+func _detonate(p_pos: Vector3, p_nrm: Vector3, p_collider: Node = null) -> void:
 	var host := get_tree().current_scene
 	if host is Node3D:
 		spawn_impact(host, p_pos, p_nrm)
+	if p_collider and host.has_method("on_projectile_hit"):
+		host.on_projectile_hit(p_pos, p_collider, damage)
 	queue_free()
 
 
