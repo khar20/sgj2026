@@ -1,4 +1,5 @@
 extends VehicleBody3D
+const FX := preload("res://scripts/projectile.gd")
 ## Player tank driver (natively on VehicleBody3D).
 ##
 ## Adaptation extracted from sample/scripts/player/player.gd + sample camera
@@ -68,6 +69,13 @@ extends VehicleBody3D
 @export var projectile_speed := 98.0
 @export var muzzle_flash_energy := 6.0
 
+# --- life ---
+@export var max_health := 100.0
+var health := 100.0
+var destroyed := false
+signal health_changed(new_health: float, max_health: float)
+signal died
+
 # --- aim state (fed by mouse, drives turret automatically) ---
 var aim_yaw := 0.0
 var aim_pitch := 0.12
@@ -87,6 +95,7 @@ var _flash_light: OmniLight3D
 
 # --- wired in _ready() ---
 var camera: Camera3D
+var world: Node
 
 # Lightweight view of the rig so scripts/camera.gd can keep its sample-style
 # interface (player.tank.optic_mount / player.tank.gun_pitch).
@@ -100,6 +109,7 @@ var tank := TankView.new()
 
 func _ready() -> void:
 	camera = get_node_or_null(camera_path)
+	world = _find_world()
 	var tank_visual := get_node_or_null(tank_path)
 	_build_aim_rig(tank_visual)
 	_build_muzzle_flash()
@@ -107,7 +117,8 @@ func _ready() -> void:
 	tank.gun_pitch = gun_pivot
 	if camera:
 		camera.player = self
-		camera.world = _find_world()
+		camera.world = world
+	add_to_group("player")
 
 
 func _find_world() -> Node:
@@ -264,17 +275,53 @@ func _build_muzzle_flash() -> void:
 
 func _physics_process(delta: float) -> void:
 	_fire_timer = maxf(0.0, _fire_timer - delta)
-	_drive_vehicle(delta)
-	_update_turret_aim(delta)
-	aiming = camera != null and camera.camera_mode == "first"
-	if _flash_light:
-		_flash_light.light_energy = lerpf(_flash_light.light_energy, 0.0, delta * 8.0)
-	if InputMap.has_action(action_fire) and Input.is_action_just_pressed(action_fire):
-		_fire_cannon()
-	if InputMap.has_action(action_toggle_view) and Input.is_action_just_pressed(action_toggle_view):
-		_toggle_view()
+	if not destroyed:
+		_drive_vehicle(delta)
+		_update_turret_aim(delta)
+		aiming = camera != null and camera.camera_mode == "first"
+		if _flash_light:
+			_flash_light.light_energy = lerpf(_flash_light.light_energy, 0.0, delta * 8.0)
+		if InputMap.has_action(action_fire) and Input.is_action_just_pressed(action_fire):
+			_fire_cannon()
+		if InputMap.has_action(action_toggle_view) and Input.is_action_just_pressed(action_toggle_view):
+			_toggle_view()
+	else:
+		engine_force = 0.0
+		brake = 0.0
+		if _flash_light:
+			_flash_light.light_energy = lerpf(_flash_light.light_energy, 0.0, delta * 8.0)
 	if camera:
 		camera.update_camera(delta)
+
+
+## Core life API: reduces health, emits health_changed, and flags the unit as
+## destroyed once empty. External systems (world hazards) call take_damage.
+func take_damage(amount: float) -> void:
+	if destroyed or health <= 0.0:
+		return
+	health = clampf(health - amount, 0.0, max_health)
+	health_changed.emit(health, max_health)
+	if health <= 0.0:
+		_on_destroyed()
+
+
+func heal(amount: float) -> void:
+	if destroyed:
+		return
+	health = clampf(health + amount, 0.0, max_health)
+	health_changed.emit(health, max_health)
+
+
+func _on_destroyed() -> void:
+	destroyed = true
+	engine_force = 0.0
+	brake = 0.0
+	var host := get_tree().current_scene
+	if host is Node3D:
+		FX.spawn_impact(host, global_position + Vector3(0.0, 1.2, 0.0), Vector3.UP)
+	if camera:
+		camera.recoil(0.6)
+	died.emit()
 
 
 ## Sample _update_movement, remapped from manual kinematic velocity to the
@@ -381,7 +428,7 @@ func _spawn_projectile(origin: Vector3, dir: Vector3) -> void:
 	if proj is RigidBody3D:
 		(proj as RigidBody3D).linear_velocity = dir * projectile_speed
 	elif proj.has_method("setup"):
-		proj.setup(dir * projectile_speed)
+		proj.setup(dir * projectile_speed, self)
 
 
 func _hitscan_fire(origin: Vector3, dir: Vector3) -> void:
@@ -397,41 +444,13 @@ func _hitscan_fire(origin: Vector3, dir: Vector3) -> void:
 	_spawn_impact(impact_pos, impact_nrm)
 
 
-## Short-lived runtime impact flash (sphere + light). No extra asset required.
+## Impact effect for the hitscan fallback: delegates to the shared burst used by
+## the real projectiles (no placeholder sphere).
 func _spawn_impact(pos: Vector3, nrm: Vector3) -> void:
 	var host := get_tree().current_scene
 	if host == null:
 		return
-	var root := Node3D.new()
-	root.name = "CannonImpact"
-	host.add_child(root)
-	root.global_position = pos + nrm * 0.1
-
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color("#ffd9a3")
-	mat.emission_enabled = true
-	mat.emission = Color("#ff9a3d")
-	mat.emission_energy_multiplier = 4.0
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-
-	var mesh := SphereMesh.new()
-	mesh.radius = 0.25
-	mesh.height = 0.5
-	var mi := MeshInstance3D.new()
-	mi.mesh = mesh
-	mi.set_surface_override_material(0, mat)
-	root.add_child(mi)
-
-	var light := OmniLight3D.new()
-	light.light_color = Color("#ffb05e")
-	light.light_energy = 5.0
-	light.omni_range = 8.0
-	root.add_child(light)
-
-	var tween := root.create_tween()
-	tween.tween_interval(0.35)
-	tween.tween_property(root, "scale", Vector3.ONE * 0.1, 0.15)
-	tween.tween_callback(root.queue_free)
+	FX.spawn_impact(host, pos, nrm)
 
 
 func _toggle_view() -> void:

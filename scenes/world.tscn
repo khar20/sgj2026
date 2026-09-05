@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bdh2ope70r8h"]
+[gd_scene load_steps=8 format=3 uid="uid://bdh2ope70r8h"]
 
 [ext_resource type="PackedScene" uid="uid://c7kk1ypxnisto" path="res://scenes/player.tscn" id="1_nnsk1"]
 [ext_resource type="Script" uid="uid://cptrli8wa2qt7" path="res://scripts/world.gd" id="1_rwgxs"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="2_hud"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_wrld"]
 sky_top_color = Color(0.192157, 0.282353, 0.509804, 1)
@@ -39,3 +40,5 @@ directional_shadow_max_distance = 256.0
 
 [node name="Player" parent="." instance=ExtResource("1_nnsk1")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 120, 42, 512)
+
+[node name="HUD" parent="." instance=ExtResource("2_hud")]
