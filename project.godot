@@ -10,12 +10,12 @@ config_version=5
 
 [application]
 
-config/name="SGJ2026"
-run/main_scene="uid://bdh2ope70r8h"
+config/name="Blackstone Protocol"
+run/main_scene="uid://c13gh5v4x8wfi"
 config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/show_image=false
 boot_splash/use_filter=false
-config/icon="res://icon.svg"
+config/icon="uid://cgl1hlh5xsyha"
 
 [autoload]
 

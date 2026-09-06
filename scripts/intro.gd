@@ -12,6 +12,7 @@ const GEN := preload("res://scripts/world_gen.gd")
 
 @onready var label: Label = $Label
 @onready var loading_label: Label = $Loading
+@onready var controls_label: Label = $Controls/ControlsLabel
 
 var current_index: int = 0
 var tween: Tween
@@ -19,6 +20,7 @@ var is_transitioning: bool = false
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
 	# Start generating the world terrain on a worker thread while the lore is on
 	# screen, so switching to the World scene has no generation hitch.
 	GEN.start_generation()
@@ -26,7 +28,8 @@ func _ready() -> void:
 	
 	if lore_entries.size() > 0:
 		label.text = lore_entries[current_index]
-		
+		update_controls()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if is_transitioning:
 		return
@@ -45,7 +48,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("ui_accept"):
 		if current_index == lore_entries.size() - 1:
 			start_game()
-			
+
 func change_entry(new_index: int) -> void:
 	is_transitioning = true
 	current_index = new_index
@@ -55,25 +58,39 @@ func change_entry(new_index: int) -> void:
 		tween.kill()
 
 	tween = create_tween()
+	
 	# Step 1: Fade text out
 	tween.tween_property(label, "modulate:a", 0.0, fade_time)
 	
-	# Step 2: Swap text instantly while invisible
-	tween.tween_callback(func(): label.text = lore_entries[current_index])
+	# Step 2: Swap text while invisible
+	tween.tween_callback(func():
+		label.text = lore_entries[current_index]
+		update_controls()
+	)
 	
 	# Step 3: Fade text back in
 	tween.tween_property(label, "modulate:a", 1.0, fade_time)
 	
 	await tween.finished
 	is_transitioning = false
-	
+
+func update_controls() -> void:
+	if current_index == 0:
+		controls_label.text = "[D] Siguiente"
+	elif current_index == lore_entries.size() - 1:
+		controls_label.text = "[A] Anterior    [Enter] Iniciar"
+	else:
+		controls_label.text = "[A] Anterior    [D] Siguiente"
+
 func start_game() -> void:
 	is_transitioning = true
+	
 	# If the worker hasn't finished yet (fast reader), wait it out here while the
 	# intro stays visible, showing progress.
 	if not GEN.ready():
 		loading_label.visible = true
 		await _poll_generation()
+	
 	loading_label.visible = false
 
 	if tween and tween.is_running():
@@ -81,9 +98,9 @@ func start_game() -> void:
 
 	tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, fade_time)
+	
 	await tween.finished
 	get_tree().change_scene_to_packed(game_scene)
-
 
 func _poll_generation() -> void:
 	while not GEN.ready():

@@ -33,6 +33,9 @@ var _crystal_mats: Array[StandardMaterial3D] = []
 var _formation: Node3D
 var _flash_mat: StandardMaterial3D = null
 
+var _last_player_pos := Vector3.ZERO
+var _player_velocity := Vector3.ZERO
+
 signal health_changed(new_health: float, max_health: float)
 signal defeated
 
@@ -61,7 +64,7 @@ func setup(p_world: Node3D, center: Vector3) -> void:
 	position.z = center.z
 
 
-func update(dt: float, player_pos: Vector3) -> void:
+func update(dt: float, player_pos: Vector3, player_vel: Vector3 = Vector3.ZERO) -> void:
 	match state:
 		"erupting":
 			eruption_t += dt / eruption_seconds
@@ -79,7 +82,7 @@ func update(dt: float, player_pos: Vector3) -> void:
 				shard_timer -= dt
 				if shard_timer <= 0.0:
 					shard_timer = shard_interval * (0.8 + randf() * 0.4)
-					_fire_volley(player_pos)
+					_fire_volley(player_pos, player_vel)
 			_update_shards(dt, player_pos)
 		"defeated":
 			_update_shards(dt, player_pos)
@@ -232,17 +235,30 @@ func _face_toward(tgt: Vector3, dt: float) -> void:
 	rotation.y += delta * minf(0.5 * dt, 1.0)
 
 
-func _fire_volley(player_pos: Vector3) -> void:
+func _fire_volley(player_pos: Vector3, player_vel: Vector3 = Vector3.ZERO) -> void:
 	var apex: Vector3 = position + Vector3(0.0, 28.0, 0.0)
-	var flight: float = player_pos.distance_to(apex) / shard_speed
-	var predicted: Vector3 = player_pos + (player_pos - apex).normalized() * flight * 0.5
+	
+	# Calculate estimated travel time to current position
+	var flight_time: float = apex.distance_to(player_pos) / shard_speed
+	
+	# Predict player location when the shards reach them
+	var predicted_pos: Vector3 = player_pos + (player_vel * flight_time)
+	
+	# Account for gravity drop during flight in _update_shards (19.6 m/s^2)
+	# by aiming slightly higher: height_offset = 0.5 * g * t^2
+	predicted_pos.y += 0.5 * 19.6 * pow(flight_time, 2.0)
+	
+	var base_dir: Vector3 = (predicted_pos - apex).normalized()
+
 	for i in shards_per_volley:
-		var sv: Vector3 = (predicted - apex).normalized()
-		sv.x += (randf() - 0.5) * 0.16
-		sv.y += 0.04 + randf() * 0.1
-		sv.z += (randf() - 0.5) * 0.16
-		sv = sv.normalized() * shard_speed
-		var origin: Vector3 = apex + Vector3((randf() - 0.5) * 5.0, 0.0, (randf() - 0.5) * 5.0)
+		var sv: Vector3 = base_dir * shard_speed
+		
+		# Add spread around predicted position
+		sv.x += (randf() - 0.5) * 6.0
+		sv.y += (randf() - 0.5) * 3.0
+		sv.z += (randf() - 0.5) * 6.0
+		
+		var origin: Vector3 = apex + Vector3((randf() - 0.5) * 4.0, 0.0, (randf() - 0.5) * 4.0)
 		_spawn_shard(origin, sv)
 
 

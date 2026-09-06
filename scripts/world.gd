@@ -40,16 +40,21 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
-		_player = get_node_or_null("Player")
+		# Fetch via group tag set in player.gd instead of hardcoded node path
+		_player = get_tree().get_first_node_in_group("player")
 	if _player == null:
 		return
 	if _player.get("destroyed"):
 		return
+		
 	if GEN.is_in_hazard(_player.global_position):
 		if _player.has_method("take_damage"):
 			_player.take_damage(HAZARD_DPS * delta)
+			
 	if _boss and is_instance_valid(_boss):
-		_boss.update(delta, _player.global_position)
+		var p_vel: Vector3 = _player.linear_velocity if _player is VehicleBody3D else Vector3.ZERO
+		# Continually passes updated global_position to boss
+		_boss.update(delta, _player.global_position, p_vel)
 
 
 func _create_terrain() -> Terrain3D:

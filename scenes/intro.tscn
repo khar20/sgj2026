@@ -9,7 +9,7 @@ content_margin_left = 18.0
 content_margin_top = 14.0
 content_margin_right = 22.0
 content_margin_bottom = 16.0
-bg_color = Color(0.02, 0.02, 0.03, 0.65)
+bg_color = Color(0.6, 0.6, 0.6, 0)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -23,6 +23,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ioskq")
+lore_entries = Array[String](["El Sector A3 permanece bajo condiciones extremas de conflicto y aislamiento. La infraestructura civil se encuentra gravemente comprometida y la presencia de fuerzas capaces de mantener el orden es cada vez más limitada. La situación ha alcanzado un punto crítico, dejando a las poblaciones del sector en una dependencia cada vez mayor de las fuerzas que aún tienen capacidad para operar en la zona.", "El Protocolo Blackstone fue diseñado como la única estrategia de supervivencia para la especie humana. Su existencia responde a una situación en la que las medidas convencionales han dejado de ser suficientes para garantizar la continuidad de la humanidad. Blackstone no representa una alternativa entre muchas, sino el último recurso disponible.", "La Unidad Puma fue creada con el único objetivo de realizar operaciones militares en la Distorsión. Debido al deterioro de la situación en el Sector A3 y al colapso progresivo de las fuerzas destinadas a contenerla, Puma se ha convertido en una de las pocas unidades con capacidad real para operar en el sector. Su experiencia y conocimiento del territorio han llevado a que sus funciones se extiendan también a labores de ayuda civil, proporcionando protección, suministros y soporte a las poblaciones que permanecen allí. Para muchos de ellos, Puma es actualmente la única fuerza capaz de ofrecer asistencia.", "«Tenemos deberes que cumplir. Mientras quede un solo cartucho, seguiremos cumpliéndolos. No por gloria, sino porque la supervivencia de la humanidad depende de ello.»
+-- Comandante Elias Varek, Unidad Puma"])
 game_scene = ExtResource("2_yjqpq")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -55,13 +57,17 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -11.5
-offset_right = 20.0
-offset_bottom = 11.5
+offset_left = -406.0
+offset_top = -266.0
+offset_right = 406.0
+offset_bottom = 267.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_4bx60")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
 
 [node name="Loading" type="Label" parent="."]
 unique_name_in_owner = true
@@ -107,11 +113,3 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("3_4bx60")
 theme_override_font_sizes/font_size = 21
-text = "CONTROLES
-W / S: Conducir / Marcha atrás
-A / D: Girar
-Ratón: Apuntar el cañón
-Clic izquierdo: Disparar
-Espacio: Freno de mano
-V: Cambiar cámara
-Esc: Pausa"
